@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex! - Login</title>
+    <script src="./js/login.js" type="module" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+    <!-- nes minify -->
+    <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="loaderBg dNone">
+        <span class="loader">CARGANDO...</span>
+    </div>
+
+    <div class="nes-container with-title container">
+        <p class="title">Iniciar sesión</p>
+        <form class="loginForm">
+            <div class="nes-field">
+                <label for="name_field">Correo</label>
+                <input type="email" name="email" class="nes-input" required>
+            </div>
+
+            <div class="nes-field">
+                <label for="name_field">Contraseña</label>
+                <input type="text" name="password" class="nes-input" required>
+            </div>
+
+            <p class="accountPrompt">¿Nuevo? <span data-mode="login">Crea una cuenta aquí!</span> </p>
+
+            <button type="submit" class="nes-btn is-primary">Ingresar</button>
+        </form>
+    </div>
+
+    <dialog class="nes-dialog" id="dialog-default">
+        <form method="dialog">
+          <p class="title">Error!</p>
+          <p class="dialog-content">Los datos ingresados son incorrectos. Intenta nuevamente.</p>
+          <button class="nes-btn is-primary">Aceptar</button>
+        </form>
+    </dialog>
+</body>
+</html>

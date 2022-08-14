@@ -1,12 +1,17 @@
 class Overworld extends Phaser.Scene {
-  currentState=false;
+  currentState = false;
 
   constructor() {
-    super({key: 'Overworld'});
+    super({ key: "Overworld" });
   }
 
   preload() {
-    this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
+    this.load.scenePlugin(
+      "rexuiplugin",
+      "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js",
+      "rexUI",
+      "rexUI"
+    );
     this.load.image("tiles", "./img/tileset.png");
     this.load.tilemapTiledJSON("map", "./img/map.json");
     this.load.spritesheet("red", "./img/red-walk.png", {
@@ -70,7 +75,13 @@ class Overworld extends Phaser.Scene {
 
     this.cameras.main.startFollow(this.player, true, 1, 1);
     this.physics.add.collider(this.player, this.treeLayer);
-    this.physics.add.overlap(this.player, this.grassLayer, this.standingOnGrass, null, this);
+    this.physics.add.overlap(
+      this.player,
+      this.grassLayer,
+      this.standingOnGrass,
+      null,
+      this
+    );
   }
 
   update() {
@@ -95,25 +106,61 @@ class Overworld extends Phaser.Scene {
     }
   }
 
-  async standingOnGrass(){
-    let tile = this.grassLayer.getTileAtWorldXY(this.player.x, this.player.y, true);
-        if (tile.index == 7 && !this.currentState) {
-            this.currentState = true;
-            const randomNumber = Math.floor(Math.random() * 100);
-            if(randomNumber <= 10){
-              const randomPokemonId = Math.floor(Math.random() * (200 - 1) + 1);
-              const request = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomPokemonId}`);
-              const response = await request.json();
-              const dialog = document.querySelector("dialog");
-              const dialogContent = dialog.querySelector(".dialog-content");
-              const dialogImg = dialog.querySelector(".dialog-img");
-              dialogContent.innerText=`Encontraste un ${response.name} en la hierba!`;
-              dialogImg.setAttribute("src", response.sprites.front_default)
-              dialog.showModal();
-            }
-        }else if(tile.index!==7){
-            this.currentState=false;
-        }
+  async catchPokemon(pokemon) {
+    const request = await axios.get(
+      "https://ch-simple-login.glitch.me/api/data/",
+      {
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+      }
+    );
+
+    const pokemonList = request.data;
+    const newPokemon = {
+      name: pokemon.name,
+      pid: pokemon.id,
+      sprite: pokemon.sprites.front_default,
+      catches: 1,
+    };
+
+    if (pokemonList.some((poke) => poke.pid == pokemon.id)) {
+      newPokemon.catches += poke.catches;
+    }
+
+    await axios.post(
+      `https://ch-simple-login.glitch.me/api/data/`,
+      newPokemon,
+      {
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+      }
+    );
+  }
+
+  async standingOnGrass() {
+    let tile = this.grassLayer.getTileAtWorldXY(
+      this.player.x,
+      this.player.y,
+      true
+    );
+    if (tile.index == 7 && !this.currentState) {
+      this.currentState = true;
+      const randomNumber = Math.floor(Math.random() * 100);
+      if (randomNumber <= 10) {
+        const randomPokemonId = Math.floor(Math.random() * (200 - 1) + 1);
+        const request = await axios.get(
+          `https://pokeapi.co/api/v2/pokemon/${randomPokemonId}`
+        );
+        const response = request.data;
+        await this.catchPokemon(response);
+        const dialog = document.querySelector(".dialogCatch");
+        const dialogContent = dialog.querySelector(".dialog-content");
+        const dialogImg = dialog.querySelector(".dialog-img");
+        dialogContent.innerText = `Encontraste un ${response.name} en la hierba!`;
+        dialogImg.setAttribute("src", response.sprites.front_default);
+        dialog.showModal();
+      }
+    } else if (tile.index !== 7) {
+      this.currentState = false;
+    }
   }
 }
 

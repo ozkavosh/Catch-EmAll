@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch 'Em All!</title>
+    <script src="./js/phaser.js" type="module" defer></script>
+    <script src="./js/game.js" type="module" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+    <link rel="stylesheet" href="./css/game.css">
+    <!-- nes minify -->
+    <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
+</head>
+<body>
+  <a class="nes-btn" href="./index.html">Volver</a>
+
+    <dialog class="nes-dialog dialogCatch" id="dialog-default">
+        <form method="dialog">
+          <p class="title">Atencion!</p>
+          <img class="dialog-img" src="" alt="pokemon">
+          <p class="dialog-content"></p>
+          <menu class="dialog-menu">
+            <button class="nes-btn is-primary">Aceptar</button>
+          </menu>
+        </form>
+    </dialog>
+
+    <dialog class="nes-dialog dialogInstructions" id="dialog-default">
+      <form method="dialog">
+        <p class="title">Instrucciones</p>
+        <p class="dialog-content">Utiliza las flechas para moverte. Busca en la hierba por Pokemones!</p>
+        <menu class="dialog-menu">
+          <button class="nes-btn is-primary">Aceptar</button>
+        </menu>
+      </form>
+  </dialog>
+</body>
+</html>

@@ -1,27 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catch 'Em All!</title>
-    <script src="./js/phaser.js" type="module" defer></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokedex!</title>
     <script src="./js/index.js" type="module" defer></script>
-    <link rel="stylesheet" href="./css/style.css">
+    <script
+      src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"
+      defer
+    ></script>
     <!-- nes minify -->
-    <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
-</head>
-<body>
-    <dialog class="nes-dialog" id="dialog-default">
-        <form method="dialog">
-          <p class="title">Atencion!</p>
-          <img class="dialog-img" src="" alt="pokemon">
-          <p class="dialog-content">Alert: this is a dialog.</p>
-          <menu class="dialog-menu">
-            <button class="nes-btn">Cancel</button>
-            <button class="nes-btn is-primary">Confirm</button>
-          </menu>
-        </form>
-    </dialog>
-</body>
+    <link
+      href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <div class="nes-container with-title container">
+      <p class="title">Pokedex de <span class="trainerName"></span></p>
+      <div class="pokedexContainer">
+        <div class="pokemonContainer">
+          <div class="nes-container is-rounded pokemonImg">
+          </div>
+
+          <div class="nes-container is-rounded pokemonInfo">
+          </div>
+        </div>
+
+        <table class="nes-table is-bordered">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Nombre</th>
+            </tr>
+          </thead>
+          <tbody class="pokemonList">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="buttons">
+        <button type="button" class="nes-btn is-warning btnLogout">Salir</button>
+        <button type="button" class="nes-btn is-primary btnPlay">Buscar POKE</button>
+      </div>
+    </div>
+  </body>
 </html>
