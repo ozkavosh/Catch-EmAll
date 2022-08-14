@@ -145,7 +145,7 @@ class Overworld extends Phaser.Scene {
       this.currentState = true;
       const randomNumber = Math.floor(Math.random() * 100);
       if (randomNumber <= 10) {
-        const randomPokemonId = Math.floor(Math.random() * (200 - 1) + 1);
+        const randomPokemonId = Math.floor(Math.random() * (600 - 1) + 1);
         const request = await axios.get(
           `https://pokeapi.co/api/v2/pokemon/${randomPokemonId}`
         );
