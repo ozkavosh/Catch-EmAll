@@ -8,7 +8,20 @@
     <script src="./js/phaser.js" type="module" defer></script>
     <script src="./js/index.js" type="module" defer></script>
     <link rel="stylesheet" href="./css/style.css">
+    <!-- nes minify -->
+    <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
 </head>
 <body>
+    <dialog class="nes-dialog" id="dialog-default">
+        <form method="dialog">
+          <p class="title">Atencion!</p>
+          <img class="dialog-img" src="" alt="pokemon">
+          <p class="dialog-content">Alert: this is a dialog.</p>
+          <menu class="dialog-menu">
+            <button class="nes-btn">Cancel</button>
+            <button class="nes-btn is-primary">Confirm</button>
+          </menu>
+        </form>
+    </dialog>
 </body>
 </html>

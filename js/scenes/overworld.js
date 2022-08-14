@@ -1,9 +1,12 @@
 class Overworld extends Phaser.Scene {
+  currentState=false;
+
   constructor() {
     super({key: 'Overworld'});
   }
 
   preload() {
+    this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
     this.load.image("tiles", "./img/tileset.png");
     this.load.tilemapTiledJSON("map", "./img/map.json");
     this.load.spritesheet("red", "./img/red-walk.png", {
@@ -92,10 +95,24 @@ class Overworld extends Phaser.Scene {
     }
   }
 
-  standingOnGrass(){
+  async standingOnGrass(){
     let tile = this.grassLayer.getTileAtWorldXY(this.player.x, this.player.y, true);
-        if (tile.index == 7) {
-            console.log('Esta pisando el pasto!!!');
+        if (tile.index == 7 && !this.currentState) {
+            this.currentState = true;
+            const randomNumber = Math.floor(Math.random() * 100);
+            if(randomNumber <= 10){
+              const randomPokemonId = Math.floor(Math.random() * (200 - 1) + 1);
+              const request = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomPokemonId}`);
+              const response = await request.json();
+              const dialog = document.querySelector("dialog");
+              const dialogContent = dialog.querySelector(".dialog-content");
+              const dialogImg = dialog.querySelector(".dialog-img");
+              dialogContent.innerText=`Encontraste un ${response.name} en la hierba!`;
+              dialogImg.setAttribute("src", response.sprites.front_default)
+              dialog.showModal();
+            }
+        }else if(tile.index!==7){
+            this.currentState=false;
         }
   }
 }
