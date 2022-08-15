@@ -1,5 +1,5 @@
 class Overworld extends Phaser.Scene {
-  currentState = false;
+  modalShowing = false;
 
   constructor() {
     super({ key: "Overworld" });
@@ -36,6 +36,8 @@ class Overworld extends Phaser.Scene {
     this.createPlayerAnimation("down", 13, 16);
     this.createPlayerAnimation("left", 0, 3);
 
+    this.cursors = this.input.keyboard.createCursorKeys();
+
     const gridEngineConfig = {
       characters: [
         {
@@ -71,14 +73,13 @@ class Overworld extends Phaser.Scene {
   }
 
   update() {
-    const cursors = this.input.keyboard.createCursorKeys();
-    if (cursors.left.isDown) {
+    if (this.cursors.left.isDown) {
       this.gridEngine.move("player", "left");
-    } else if (cursors.right.isDown) {
+    } else if (this.cursors.right.isDown) {
       this.gridEngine.move("player", "right");
-    } else if (cursors.up.isDown) {
+    } else if (this.cursors.up.isDown) {
       this.gridEngine.move("player", "up");
-    } else if (cursors.down.isDown) {
+    } else if (this.cursors.down.isDown) {
       this.gridEngine.move("player", "down");
     }
   }
@@ -128,15 +129,27 @@ class Overworld extends Phaser.Scene {
     if (pokemonList.some((poke) => poke.pid == pokemon.id)) {
       const poke = pokemonList.find((poke) => poke.pid == pokemon.id);
       newPokemon.catches += poke.catches;
-    }
 
-    await axios.post(
-      `https://ch-simple-login.glitch.me/api/data/`,
-      newPokemon,
-      {
-        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
-      }
-    );
+      await axios.put(
+        `https://ch-simple-login.glitch.me/api/data/${poke.id}`,
+        newPokemon,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+    } else {
+      await axios.post(
+        `https://ch-simple-login.glitch.me/api/data/`,
+        newPokemon,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+    }
   }
 
   hasTrigger(tilemap, position) {
@@ -146,9 +159,19 @@ class Overworld extends Phaser.Scene {
     });
   }
 
+  playerStop(){
+    this.cursors.up.isDown = false;
+    this.cursors.left.isDown = false;
+    this.cursors.right.isDown = false;
+    this.cursors.down.isDown = false;
+  }
+
   async standingOnGrass() {
     const randomNumber = Math.floor(Math.random() * 100);
-    if (randomNumber <= 10) {
+    if (randomNumber <= 10 && !this.modalShowing) {
+      this.modalShowing = true;
+      this.playerStop();
+      this.input.keyboard.enabled = false;
       const randomPokemonId = Math.floor(Math.random() * (600 - 1) + 1);
       const request = await axios.get(
         `https://pokeapi.co/api/v2/pokemon/${randomPokemonId}`
@@ -161,10 +184,12 @@ class Overworld extends Phaser.Scene {
       const dialogImg = dialog.querySelector(".dialog-img");
       dialogContent.innerText = `Encontraste un ${response.name} en la hierba!`;
       dialogImg.setAttribute("src", response.sprites.front_default);
-      this.input.keyboard.enabled = false;
       dialog.showModal();
 
-      form.addEventListener("submit", () => this.input.keyboard.enabled = true);
+      form.addEventListener("submit", () => {
+        this.input.keyboard.enabled = true;
+        this.modalShowing = false;
+      });
     }
   }
 }

@@ -39,8 +39,22 @@ const register = async (e) => {
     loader.classList.toggle('dNone');
 }
 
+const showPwd = (e) => {
+    if(!e.target.matches(".showPwdBtn")) return;
+    const type = e.target.previousElementSibling.getAttribute('type');
+
+    if(type === 'text'){
+        e.target.previousElementSibling.setAttribute('type','password');
+        e.target.classList.replace("bi-eye-slash","bi-eye");
+    }else{
+        e.target.previousElementSibling.setAttribute('type','text');
+        e.target.classList.replace("bi-eye","bi-eye-slash");
+    }   
+}
+
 document.addEventListener('click', (e) => {
     swapMode(e);
+    showPwd(e);
 });
 
 document.addEventListener('submit', (e) => {

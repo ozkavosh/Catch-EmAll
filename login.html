@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
     <!-- nes minify -->
     <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
@@ -26,7 +27,8 @@
 
             <div class="nes-field">
                 <label for="name_field">Contraseña</label>
-                <input type="text" name="password" class="nes-input" required>
+                <input type="password" name="password" class="nes-input" required>
+                <i class="bi bi-eye showPwdBtn"></i>
             </div>
 
             <p class="accountPrompt">¿Nuevo? <span data-mode="login">Crea una cuenta aquí!</span> </p>

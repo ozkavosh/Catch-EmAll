@@ -4,8 +4,8 @@
   font-family: "Press Start 2P", cursive;
 }
 
-.dNone{
-    display: none;
+.dNone {
+  display: none;
 }
 
 html,
@@ -52,45 +52,46 @@ body {
   }
 }
 
-.container{
+.container {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
-.pokedexContainer{
+.pokedexContainer {
   display: flex;
   flex-flow: row wrap;
   gap: 1rem;
 }
 
-.pokemonImg{
+.pokemonImg {
   text-align: center;
   height: 128px;
 }
 
-tbody{
+tbody {
   display: block;
   max-height: 15rem;
   overflow-y: scroll;
 }
 
-thead, tbody tr{
+thead,
+tbody tr {
   display: table;
   width: 100%;
   table-layout: fixed;
 }
 
-tbody tr:hover{
+tbody tr:hover {
   background-color: gray;
 }
 
-table{
+table {
   width: 390px;
 }
 
-.buttons{
+.buttons {
   margin-top: 1rem;
 }
 
@@ -101,10 +102,24 @@ table{
   gap: 0.5rem;
 }
 
-dialog > form{
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+.nes-field {
+  position: relative;
+}
+
+.showPwdBtn {
+  position: absolute;
+  top: 50%;
+  left: 92%;
+  font-size: 1.2rem;
+  cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC)
+      14 0,
+    pointer;
+}
+
+dialog > form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .accountPrompt {
