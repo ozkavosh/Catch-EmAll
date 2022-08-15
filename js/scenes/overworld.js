@@ -6,103 +6,106 @@ class Overworld extends Phaser.Scene {
   }
 
   preload() {
-    this.load.scenePlugin(
-      "rexuiplugin",
-      "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js",
-      "rexUI",
-      "rexUI"
-    );
     this.load.image("tiles", "./img/tileset.png");
     this.load.tilemapTiledJSON("map", "./img/map.json");
-    this.load.spritesheet("red", "./img/red-walk.png", {
+    this.load.spritesheet("player", "./img/red-walk.png", {
       frameWidth: 32,
       frameHeight: 48,
     });
   }
 
   create() {
-    this.cameras.main.setBounds(0, 0, 800, 600);
-    this.physics.world.setBounds(0, 0, 800, 600);
+    this.overworldTileMap = this.make.tilemap({ key: "map" });
+    this.overworldTileMap.addTilesetImage("tileset", "tiles");
+    for (let i = 0; i < this.overworldTileMap.layers.length; i++) {
+      const layer = this.overworldTileMap.createLayer(i, "tileset", 0, 0);
+      layer.scale = 3;
+    }
 
-    this.map = this.make.tilemap({ key: "map", tileWidth: 16, tileHeight: 16 });
-    this.tileset = this.map.addTilesetImage("tileset", "tiles");
-    this.groundLayer = this.map.createLayer("Suelo", this.tileset, 0, 0);
-    this.treeLayer = this.map.createLayer("Arboles1", this.tileset, 0, 0);
-    this.grassLayer = this.map.createLayer("Hierba", this.tileset, 0, 0);
-    this.treeLayer.setCollision([
-      12, 13, 14, 46, 47, 108, 200, 201, 202, 706, 707, 708, 799, 800, 801, 802,
-      803, 893, 894, 895, 896, 897, 988, 989, 990, 1082, 1083, 1084,
-    ]);
-
-    this.player = this.physics.add.sprite(350, 250, "red");
-    this.player.setCollideWorldBounds(true);
-
-    this.anims.create({
-      key: "left",
-      frames: this.anims.generateFrameNumbers("red", { start: 0, end: 3 }),
-      frameRate: 4,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "still",
-      frames: [{ key: "red", frame: 4 }],
-      frameRate: 20,
-    });
-
-    this.anims.create({
-      key: "right",
-      frames: this.anims.generateFrameNumbers("red", { start: 5, end: 8 }),
-      frameRate: 4,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "up",
-      frames: this.anims.generateFrameNumbers("red", { start: 9, end: 12 }),
-      frameRate: 4,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "down",
-      frames: this.anims.generateFrameNumbers("red", { start: 13, end: 16 }),
-      frameRate: 4,
-      repeat: -1,
-    });
-
-    this.cursors = this.input.keyboard.createCursorKeys();
-
-    this.cameras.main.startFollow(this.player, true, 1, 1);
-    this.physics.add.collider(this.player, this.treeLayer);
-    this.physics.add.overlap(
-      this.player,
-      this.grassLayer,
-      this.standingOnGrass,
-      null,
-      this
+    const playerSprite = this.add.sprite(0, 0, "player");
+    playerSprite.scale = 1.5;
+    playerSprite.setFrame(this.getStopFrame("down"));
+    this.cameras.main.startFollow(playerSprite, true);
+    this.cameras.main.setFollowOffset(
+      -playerSprite.width,
+      -playerSprite.height
     );
+
+    this.createPlayerAnimation("up", 9, 12);
+    this.createPlayerAnimation("right", 5, 8);
+    this.createPlayerAnimation("down", 13, 16);
+    this.createPlayerAnimation("left", 0, 3);
+
+    const gridEngineConfig = {
+      characters: [
+        {
+          id: "player",
+          sprite: playerSprite,
+          startPosition: { x: 8, y: 10 },
+        },
+      ],
+    };
+
+    this.gridEngine.create(this.overworldTileMap, gridEngineConfig);
+
+    this.gridEngine.movementStarted().subscribe(({ direction }) => {
+      playerSprite.anims.play(direction);
+    });
+
+    this.gridEngine.movementStopped().subscribe(({ direction }) => {
+      playerSprite.anims.stop();
+      playerSprite.setFrame(this.getStopFrame(direction));
+    });
+
+    this.gridEngine.directionChanged().subscribe(({ direction }) => {
+      playerSprite.setFrame(this.getStopFrame(direction));
+    });
+
+    this.gridEngine
+      .positionChangeFinished()
+      .subscribe(({ charId, exitTile, enterTile }) => {
+        if (this.hasTrigger(this.overworldTileMap, enterTile)) {
+          this.standingOnGrass();
+        }
+      });
   }
 
   update() {
-    this.player.setVelocity(0);
+    const cursors = this.input.keyboard.createCursorKeys();
+    if (cursors.left.isDown) {
+      this.gridEngine.move("player", "left");
+    } else if (cursors.right.isDown) {
+      this.gridEngine.move("player", "right");
+    } else if (cursors.up.isDown) {
+      this.gridEngine.move("player", "up");
+    } else if (cursors.down.isDown) {
+      this.gridEngine.move("player", "down");
+    }
+  }
 
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-150);
-      this.player.anims.play("left", true);
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(150);
-      this.player.anims.play("right", true);
-    } else if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-150);
-      this.player.anims.play("up", true);
-    } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(150);
-      this.player.anims.play("down", true);
-    } else {
-      this.player.setVelocityX(0);
+  createPlayerAnimation(name, startFrame, endFrame) {
+    this.anims.create({
+      key: name,
+      frames: this.anims.generateFrameNumbers("player", {
+        start: startFrame,
+        end: endFrame,
+      }),
+      frameRate: 4,
+      repeat: -1,
+      yoyo: true,
+    });
+  }
 
-      this.player.anims.play("still");
+  getStopFrame(direction) {
+    switch (direction) {
+      case "up":
+        return 9;
+      case "right":
+        return 5;
+      case "down":
+        return 4;
+      case "left":
+        return 0;
     }
   }
 
@@ -123,6 +126,7 @@ class Overworld extends Phaser.Scene {
     };
 
     if (pokemonList.some((poke) => poke.pid == pokemon.id)) {
+      const poke = pokemonList.find((poke) => poke.pid == pokemon.id);
       newPokemon.catches += poke.catches;
     }
 
@@ -135,31 +139,32 @@ class Overworld extends Phaser.Scene {
     );
   }
 
+  hasTrigger(tilemap, position) {
+    return tilemap.layers.some((layer) => {
+      const tile = tilemap.getTileAt(position.x, position.y, false, layer.name);
+      return tile?.properties?.trigger;
+    });
+  }
+
   async standingOnGrass() {
-    let tile = this.grassLayer.getTileAtWorldXY(
-      this.player.x,
-      this.player.y,
-      true
-    );
-    if (tile.index == 7 && !this.currentState) {
-      this.currentState = true;
-      const randomNumber = Math.floor(Math.random() * 100);
-      if (randomNumber <= 10) {
-        const randomPokemonId = Math.floor(Math.random() * (600 - 1) + 1);
-        const request = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon/${randomPokemonId}`
-        );
-        const response = request.data;
-        await this.catchPokemon(response);
-        const dialog = document.querySelector(".dialogCatch");
-        const dialogContent = dialog.querySelector(".dialog-content");
-        const dialogImg = dialog.querySelector(".dialog-img");
-        dialogContent.innerText = `Encontraste un ${response.name} en la hierba!`;
-        dialogImg.setAttribute("src", response.sprites.front_default);
-        dialog.showModal();
-      }
-    } else if (tile.index !== 7) {
-      this.currentState = false;
+    const randomNumber = Math.floor(Math.random() * 100);
+    if (randomNumber <= 10) {
+      const randomPokemonId = Math.floor(Math.random() * (600 - 1) + 1);
+      const request = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon/${randomPokemonId}`
+      );
+      const response = request.data;
+      await this.catchPokemon(response);
+      const dialog = document.querySelector(".dialogCatch");
+      const form = dialog.querySelector("form");
+      const dialogContent = dialog.querySelector(".dialog-content");
+      const dialogImg = dialog.querySelector(".dialog-img");
+      dialogContent.innerText = `Encontraste un ${response.name} en la hierba!`;
+      dialogImg.setAttribute("src", response.sprites.front_default);
+      this.input.keyboard.enabled = false;
+      dialog.showModal();
+
+      form.addEventListener("submit", () => this.input.keyboard.enabled = true);
     }
   }
 }

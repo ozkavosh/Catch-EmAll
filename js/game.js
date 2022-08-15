@@ -1,4 +1,4 @@
-import Overworld from './scenes/overworld.js';
+import Overworld from "./scenes/overworld.js";
 
 const config = {
   type: Phaser.CANVAS,
@@ -8,14 +8,26 @@ const config = {
   physics: {
     default: "arcade",
   },
-  scene: [Overworld]
+  scene: [Overworld],
+  plugins: {
+    scene: [
+      {
+        key: "gridEngine",
+        plugin: GridEngine,
+        mapping: "gridEngine",
+      },
+    ],
+  },
 };
 
 const game = new Phaser.Game(config);
 
 const showInstructions = () => {
+  if(!sessionStorage.getItem("token")){
+    return location.href = "./login.html";
+  }
   const dialog = document.querySelector(".dialogInstructions");
   dialog.showModal();
-}
+};
 
-window.addEventListener('load', () => showInstructions());
+window.addEventListener("load", () => showInstructions());
