@@ -159,7 +159,7 @@ class Overworld extends Phaser.Scene {
     });
   }
 
-  playerStop(){
+  playerStop() {
     this.cursors.up.isDown = false;
     this.cursors.left.isDown = false;
     this.cursors.right.isDown = false;
@@ -178,18 +178,15 @@ class Overworld extends Phaser.Scene {
       );
       const response = request.data;
       await this.catchPokemon(response);
-      const dialog = document.querySelector(".dialogCatch");
-      const form = dialog.querySelector("form");
-      const dialogContent = dialog.querySelector(".dialog-content");
-      const dialogImg = dialog.querySelector(".dialog-img");
-      dialogContent.innerText = `Encontraste un ${response.name} en la hierba!`;
-      dialogImg.setAttribute("src", response.sprites.front_default);
-      dialog.showModal();
 
-      form.addEventListener("submit", () => {
-        this.input.keyboard.enabled = true;
-        this.modalShowing = false;
+      await Swal.fire({
+        title: "Atencion!",
+        iconHtml: `<img src="${response.sprites.front_default}" alt="${response.name}"/>`,
+        text: `Encontraste un ${response.name} salvaje!`,
       });
+
+      this.input.keyboard.enabled = true;
+      this.modalShowing = false;
     }
   }
 }

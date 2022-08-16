@@ -26,8 +26,8 @@ const showInstructions = () => {
   if(!sessionStorage.getItem("token")){
     return location.href = "./login.html";
   }
-  const dialog = document.querySelector(".dialogInstructions");
-  dialog.showModal();
+  
+  Swal.fire("Instrucciones","Utiliza las flechas para moverte.\nBusca Pokemones en la hierba!", "info");
 };
 
 window.addEventListener("load", () => showInstructions());
