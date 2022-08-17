@@ -1,6 +1,18 @@
+String.prototype.capitalize = function(){return `${this.at(0).toUpperCase()}${this.slice(1).toLowerCase()}`}
+
 const pokemonList = document.querySelector(".pokemonList");
 const pokemonImg = document.querySelector(".pokemonImg");
 const pokemonInfo = document.querySelector(".pokemonInfo");
+const pokemonCatched = document.querySelector(".pokemonCatched");
+const pokemonName = document.querySelector(".pokemonName");
+
+const pokemonDetails = {
+  customClass: {
+    popup: 'nes-container',
+  },
+  title: "Pokemon",
+  html: "<p>Esto es una prueba!<p>"
+}
 
 const isLogged = async () => {
   if (!sessionStorage.getItem("token")) {
@@ -30,16 +42,18 @@ const renderPokemonList = async (e) => {
   );
   const response = request.data.sort((a,b) => a.pid - b.pid);
 
+  pokemonCatched.innerText = response.length;
+
   response.forEach((pokemon, index) => {
     pokemonList.innerHTML += `
     <tr class="pokemonRow" data-id=${pokemon.id}>
         <td>${pokemon.pid}</td>
-        <td>${pokemon.name}</td>
+        <td>${pokemon.name.capitalize()}</td>
     </tr>`;
 
     if(index === 0) {
+        pokemonName.innerHTML = `#${pokemon.pid} ${pokemon.name.capitalize()}`
         pokemonImg.innerHTML = `<img src="${pokemon.sprite}" alt="${pokemon.name}" />`;
-        pokemonInfo.innerHTML = `Encontrados: ${pokemon.catches}`;
     }
   });
 };
@@ -55,9 +69,14 @@ const showPokemon = async (e) => {
   );
 
   const response = request.data;
+  pokemonName.innerHTML = `#${response.pid} ${response.name.capitalize()}`
   pokemonImg.innerHTML = `<img src="${response.sprite}" alt="${response.name}" />`;
-  pokemonInfo.innerHTML = `Encontrados: ${response.catches}`;
 };
+
+const showPokemonDetails = async (e) => {
+  if(!e.target.matches(".btnDetails")) return;
+  Swal.fire(pokemonDetails);
+}
 
 const play = (e) => {
   if (!e.target.matches(".btnPlay")) return;
@@ -79,4 +98,5 @@ document.addEventListener("click", (e) => {
   logout(e);
   play(e);
   showPokemon(e);
+  showPokemonDetails(e);
 });

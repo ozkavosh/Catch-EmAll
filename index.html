@@ -10,6 +10,7 @@
       src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"
       defer
     ></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- nes minify -->
     <link
       href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css"
@@ -20,13 +21,18 @@
   <body>
     <div class="nes-container with-title container">
       <p class="title">Pokedex de <span class="trainerName"></span></p>
+      <div class="nes-container is-rounded is-centered catchedContainer">
+        <p>Encontrados: <span class="pokemonCatched"></span>/600</p>
+      </div>
       <div class="pokedexContainer">
         <div class="pokemonContainer">
+          <div class="nes-container is-rounded pokemonName">
+          </div>
+
           <div class="nes-container is-rounded pokemonImg">
           </div>
 
-          <div class="nes-container is-rounded pokemonInfo">
-          </div>
+          <button type="button" class="nes-btn is-normal btnDetails">Información</button>
         </div>
 
         <table class="nes-table is-bordered">
@@ -43,7 +49,7 @@
 
       <div class="buttons">
         <button type="button" class="nes-btn is-warning btnLogout">Salir</button>
-        <button type="button" class="nes-btn is-primary btnPlay">Buscar POKE</button>
+        <button type="button" class="nes-btn is-error btnPlay">Buscar POKE</button>
       </div>
     </div>
   </body>
