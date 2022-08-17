@@ -8,7 +8,11 @@ class Overworld extends Phaser.Scene {
   preload() {
     this.load.image("tiles", "./img/tileset.png");
     this.load.tilemapTiledJSON("map", "./img/map.json");
-    this.load.spritesheet("player", "./img/red-walk.png", {
+    this.load.spritesheet("player", "./img/frani-walk.png", {
+      frameWidth: 32,
+      frameHeight: 48,
+    });
+    this.load.spritesheet("npc1", "./img/red-walk.png", {
       frameWidth: 32,
       frameHeight: 48,
     });
@@ -25,18 +29,20 @@ class Overworld extends Phaser.Scene {
     const playerSprite = this.add.sprite(0, 0, "player");
     playerSprite.scale = 1.5;
     playerSprite.setFrame(this.getStopFrame("down"));
+
+    const npcSprite = this.add.sprite(0, 0, "npc1");
+    npcSprite.scale = 1.5;
+    npcSprite.setFrame(this.getStopFrame("down"));
     this.cameras.main.startFollow(playerSprite, true);
     this.cameras.main.setFollowOffset(
       -playerSprite.width,
       -playerSprite.height
     );
 
-    this.createPlayerAnimation("up", 9, 12);
-    this.createPlayerAnimation("right", 5, 8);
-    this.createPlayerAnimation("down", 13, 16);
-    this.createPlayerAnimation("left", 0, 3);
-
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.createPlayerAnimation("player", "up", 9, 12);
+    this.createPlayerAnimation("player", "right", 5, 8);
+    this.createPlayerAnimation("player", "down", 13, 16);
+    this.createPlayerAnimation("player", "left", 0, 3);
 
     const gridEngineConfig = {
       characters: [
@@ -45,34 +51,75 @@ class Overworld extends Phaser.Scene {
           sprite: playerSprite,
           startPosition: { x: 8, y: 10 },
         },
+        {
+          id: "npc1",
+          sprite: npcSprite,
+          startPosition: { x: 12, y: 5 },
+          speed: 1.5,
+          walkingAnimationMapping: {
+            up: {
+              leftFoot: 12,
+              standing: 9,
+              rightFoot: 10,
+            },
+            down: {
+              leftFoot: 14,
+              standing: 13,
+              rightFoot: 16,
+            },
+            left: {
+              leftFoot: 1,
+              standing: 0,
+              rightFoot: 3,
+            },
+            right: {
+              leftFoot: 6,
+              standing: 5,
+              rightFoot: 8,
+            },
+          },
+        },
       ],
     };
 
     this.gridEngine.create(this.overworldTileMap, gridEngineConfig);
 
-    this.gridEngine.movementStarted().subscribe(({ direction }) => {
-      playerSprite.anims.play(direction);
+    this.gridEngine.movementStarted().subscribe(({ charId, direction }) => {
+      if (charId === "player") {
+        playerSprite.anims.play(direction);
+      }
     });
 
-    this.gridEngine.movementStopped().subscribe(({ direction }) => {
-      playerSprite.anims.stop();
-      playerSprite.setFrame(this.getStopFrame(direction));
+    this.gridEngine.movementStopped().subscribe(({ charId, direction }) => {
+      if (charId === "player") {
+        playerSprite.anims.stop();
+        playerSprite.setFrame(this.getStopFrame(direction));
+      }
     });
 
-    this.gridEngine.directionChanged().subscribe(({ direction }) => {
-      playerSprite.setFrame(this.getStopFrame(direction));
+    this.gridEngine.directionChanged().subscribe(({ charId, direction }) => {
+      if (charId === "player") {
+        playerSprite.setFrame(this.getStopFrame(direction));
+      }
     });
 
     this.gridEngine
       .positionChangeFinished()
       .subscribe(({ charId, exitTile, enterTile }) => {
-        if (this.hasTrigger(this.overworldTileMap, enterTile)) {
+        if (
+          charId == "player" &&
+          this.hasTrigger(this.overworldTileMap, enterTile)
+        ) {
           this.standingOnGrass();
         }
       });
+
+    this.gridEngine.moveRandomly("npc1");
   }
 
   update() {
+    this.cursors = this.input.keyboard.createCursorKeys();
+
     if (this.cursors.left.isDown) {
       this.gridEngine.move("player", "left");
     } else if (this.cursors.right.isDown) {
@@ -84,16 +131,15 @@ class Overworld extends Phaser.Scene {
     }
   }
 
-  createPlayerAnimation(name, startFrame, endFrame) {
+  createPlayerAnimation(spriteName, name, startFrame, endFrame) {
     this.anims.create({
       key: name,
-      frames: this.anims.generateFrameNumbers("player", {
+      frames: this.anims.generateFrameNumbers(spriteName, {
         start: startFrame,
         end: endFrame,
       }),
       frameRate: 4,
       repeat: -1,
-      yoyo: true,
     });
   }
 
